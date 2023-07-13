@@ -7,13 +7,13 @@ pub const nameBuilderState = struct {
 
     const InsertContext = struct {
         msg: []const u8,
-        raw: []const u8,
+        fullName: []const u8,
 
         pub fn hash(self: @This(), ptr: u14) u64 {
             if (ptr >= self.msg.len) {
                 // Hash map is growing, but the current name hasn't been inserted yet to self.msg;
                 const offset = @as(usize, @intCast(ptr)) - self.msg.len;
-                return hashRawName(self.raw[offset..]);
+                return hashRawName(self.fullName[offset..]);
             }
 
             var h = std.hash.Wyhash.init(0);
@@ -24,6 +24,7 @@ pub const nameBuilderState = struct {
                 }
                 std.debug.assert(self.msg[offset] & 0xC0 == 0);
                 if (self.msg[offset] == 0) {
+                    h.update(&[_]u8{0});
                     return h.final();
                 }
                 const length = self.msg[offset] + 1;
@@ -102,7 +103,7 @@ pub const nameBuilderState = struct {
         while (name[i] != 0) : (i += name[i] + 1) {
             const newPtr = msg.items.len + i;
             if (newPtr <= std.math.maxInt(u14)) {
-                const res = try self.map.getOrPutContextAdapted(msg.allocator, name[i..], GetContext{ .msg = msg.items }, .{ .msg = msg.items, .raw = name[i..] });
+                const res = try self.map.getOrPutContextAdapted(msg.allocator, name[i..], GetContext{ .msg = msg.items }, .{ .msg = msg.items, .fullName = name });
                 if (res.found_existing) {
                     var p: [2]u8 = undefined;
                     std.mem.writeIntBig(u16, &p, @as(u16, @intCast(res.key_ptr.*)) | 0xC000);
