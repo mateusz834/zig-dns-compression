@@ -154,5 +154,5 @@ pub fn main() !void {
 
     const elapsed = end - start;
 
-    std.log.err("{} cert parse: total: {} ns, per iteration: {} ns, {} iterations per second\n", .{ n, elapsed, elapsed / n, std.time.ns_per_s / (elapsed / n) });
+    std.log.err("{}: total: {} ns, per iteration: {} ns, {} iterations per second\n", .{ n, elapsed, elapsed / n, std.time.ns_per_s / (elapsed / n) });
 }
