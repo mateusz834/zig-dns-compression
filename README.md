@@ -1,5 +1,5 @@
 # zig-dns-compression
-A unique way of compressing DNS names with the use of zig std HashMap
+A unique way for compressing DNS names with the use of zig std HashMap
 
 The implementation uses the *Adapted hash map API, so that there is no need
 to allocate a new byte slice for each name (that is being added to the compression hash map),
